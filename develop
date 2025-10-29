@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if command -v micromamba >/dev/null 2>&1; then
+
+  PROJECT_DIR=$(dirname $(realpath "$BASH_SOURCE"))
+  ENVIRONMENT_NAME=rsna_iad
+
+  pushd "$PROJECT_DIR"
+
+  if [ "$(micromamba info --envs | grep -c "$ENVIRONMENT_NAME")" = 0 ]; then
+    micromamba env create -f "env.yml" -y
+    micromamba activate "$ENVIRONMENT_NAME"
+    pip install -r "requirements.txt"
+  else
+    micromamba activate "$ENVIRONMENT_NAME"
+  fi
+
+  export RSNA_IAD_DATA_DIR="$DATA_DIR/rsna_iad"
+  export RSNA_IAD_VASTAI_PUBLIC_IP="79.160.189.79"
+  export RSNA_IAD_VASTAI_SSH_PORT="11757"
+
+  popd
+
+else
+  echo "Micromamba is not installed."
+fi
